@@ -11,36 +11,22 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_definitions(-DHAVE_STRNDUP -DHAVE_STPNCPY -DHAVE_GETIFADDRS -DHAVE_MEMCPY -DHAVE_VASPRINTF -DHAVE_ASPRINTF -DHAVE_OPENSSL -DOPENSSL_SHA  -DOPENSSL -DSTDC_HEADERS -DHAVE_UNISTD_H -DHAVE_SYS_TIME_H -DPACKAGE_VERSION="v1.3" -DPACKAGE_STRING="v1.3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -x objective-c++ ")
-    # Execute ./configure --with-openssl
+    # Execute autogen.sh
     execute_process(
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/configure --with-openssl
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/autogen.sh --with-openssl
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        RESULT_VARIABLE CONFIGURE_RESULT
+        RESULT_VARIABLE AUTOREGEN_RESULT
     )
 
-    # Check the result of ./configure
-    if(NOT CONFIGURE_RESULT EQUAL "0")
-        message(FATAL_ERROR "Configure failed with error code ${CONFIGURE_RESULT}")
+    # Check the result of autogen.sh
+    if(NOT AUTOREGEN_RESULT EQUAL "0")
+        message(FATAL_ERROR "autogen.sh failed with error code ${AUTOREGEN_RESULT}")
     endif()
     
     # Find OpenSSL package
     find_package(OpenSSL REQUIRED)
 endif()
 
-
-
-
-# Execute autogen.sh
-# execute_process(
-#     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/autogen.sh
-#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-#     RESULT_VARIABLE AUTOREGEN_RESULT
-# )
-
-# # Check the result of autogen.sh
-# if(NOT AUTOREGEN_RESULT EQUAL "0")
-#     message(FATAL_ERROR "autogen.sh failed with error code ${AUTOREGEN_RESULT}")
-# endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libusbmuxd ${CMAKE_CURRENT_SOURCE_DIR}/../libusbmuxd/build)
 
